@@ -1,0 +1,32 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.3.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+	id 'java'
+}
+
+group = 'com.webhook'
+version = '0.0.1'
+sourceCompatibility = '8'
+
+apply plugin: 'io.spring.dependency-management'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+	developmentOnly
+	runtimeClasspath {
+		extendsFrom developmentOnly
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile('org.projectlombok:lombok:1.16.8')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('com.google.guava:guava:19.0')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
