@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.collect.Lists;
+import com.webhook.config.Pinpoint;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,7 @@ public class SlackNotifier {
 
 	public enum SlackTarget {
 		// TODO webHookUrl 은 자신의 슬랙 IncomingWebHookAPI로 변경하세요.
-		CH_INCOMING("https://hooks.slack.com/services/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", "incoming");
+		CH_INCOMING("https://hooks.slack.com/services/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", "incoming");
 
 		String webHookUrl;
 		String channel;
@@ -60,10 +61,20 @@ public class SlackNotifier {
 			this.attachments.add(attachement);
 		}
 	}
-	public boolean notify(SlackTarget target, SlackMessageAttachement message) {
+
+	public SlackMessageAttachement mappingSlack(Pinpoint message) {
+		SlackMessageAttachement slack = new SlackMessageAttachement();
+		slack.setTitle(message.getApplicationId());
+		slack.setTitle_link(message.getPinpointUrl());
+		slack.setPretext(message.getCheckerName());
+		slack.setText(message.getNotes());
+		return slack;
+	}
+
+	public boolean notify(SlackTarget target, Pinpoint message) {
 		log.debug("Notify[target: {}, message: {}]", target, message);
 
-		SlackMessage slackMessage = SlackMessage.builder().channel(target.channel).attachments(Lists.newArrayList(message)).build();
+		SlackMessage slackMessage = SlackMessage.builder().channel(target.channel).attachments(Lists.newArrayList(mappingSlack(message))).build();
 		try {
 			restTemplate.postForEntity(target.webHookUrl, slackMessage, String.class);
 			return true;
